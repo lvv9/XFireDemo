@@ -33,6 +33,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <artifactId>okhttp</artifactId>
+            <groupId>com.squareup.okhttp3</groupId>
+            <version>3.14.7</version>
+        </dependency>
+        <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>3.141.59</version>
@@ -49,19 +54,11 @@
             <groupId>org.codehaus.xfire</groupId>
             <artifactId>xfire-spring</artifactId>
             <version>1.2.6</version>
-<!--            xfire的一些依赖太旧了，exclude掉一些-->
+<!--            exclude旧的spring依赖-->
             <exclusions>
                 <exclusion>
-                    <groupId>org.springframework</groupId>
                     <artifactId>spring</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.springframework</groupId>
-                    <artifactId>spring-mock</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
