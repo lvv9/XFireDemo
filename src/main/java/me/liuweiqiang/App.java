@@ -1,8 +1,19 @@
 package me.liuweiqiang;
 
 import me.liuweiqiang.rmi.TicketServiceEx;
-import org.codehaus.xfire.XFireFactory;
+import org.codehaus.xfire.DefaultXFire;
+import org.codehaus.xfire.XFire;
+import org.codehaus.xfire.aegis.AegisBindingProvider;
+import org.codehaus.xfire.aegis.type.DefaultTypeMappingRegistry;
+import org.codehaus.xfire.aegis.type.TypeMappingRegistry;
+import org.codehaus.xfire.service.DefaultServiceRegistry;
+import org.codehaus.xfire.service.ServiceRegistry;
+import org.codehaus.xfire.service.binding.MessageBindingProvider;
+import org.codehaus.xfire.service.binding.ObjectServiceFactory;
 import org.codehaus.xfire.spring.remoting.XFireExporter;
+import org.codehaus.xfire.transport.DefaultTransportManager;
+import org.codehaus.xfire.transport.TransportManager;
+import org.codehaus.xfire.transport.http.XFireServletController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -30,15 +41,65 @@ public class App {
     }
 
     @Bean("/TicketServiceEx")
-    public XFireExporter xFireExporter() throws Exception {
-        //
+    public XFireExporter xFireExporter(XFire xFire) {
         XFireExporter xFireExporter = new XFireExporter();
         xFireExporter.setServiceInterface(TicketServiceEx.class);
         xFireExporter.setServiceBean(ticketServiceEx);
-        xFireExporter.setXfire(XFireFactory.newInstance().getXFire());
-        xFireExporter.afterPropertiesSet();
+//        xFireExporter.setXfire(XFireFactory.newInstance().getXFire());
+//        xFireExporter.afterPropertiesSet();
         //这一段是摘抄的，通过xml方式注入的话因为XFire太旧了会报异常，官网上不了也找不到什么资料
+        xFireExporter.setXfire(xFire);
         return xFireExporter;
+    }
+
+    @Bean("xfire")
+    public DefaultXFire xFire(ServiceRegistry serviceRegistry, TransportManager transportManager) {
+        return new DefaultXFire(serviceRegistry, transportManager);
+    }
+
+    @Bean(value = "xfire.transportManager",
+    initMethod = "initialize",
+    destroyMethod = "dispose")
+    public DefaultTransportManager transportManager() {
+        return new DefaultTransportManager();
+    }
+
+    @Bean("xfire.serviceRegistry")
+    public DefaultServiceRegistry serviceRegistry() {
+        return new DefaultServiceRegistry();
+    }
+
+    @Bean(value = "xfire.typeMappingRegistry", initMethod = "createDefaultMappings")
+    public DefaultTypeMappingRegistry typeMappingRegistry() {
+        return new DefaultTypeMappingRegistry();
+    }
+
+    @Bean("xfire.aegisBindingProvider")
+    public AegisBindingProvider aegisBindingProvider(TypeMappingRegistry typeMappingRegistry) {
+        return new AegisBindingProvider(typeMappingRegistry);
+    }
+
+    @Bean("xfire.serviceFactory")
+    public ObjectServiceFactory serviceFactory(TransportManager transportManager, AegisBindingProvider aegisBindingProvider) {
+        return new ObjectServiceFactory(transportManager, aegisBindingProvider);
+    }
+
+    @Bean("xfire.servletController")
+    public XFireServletController xFireServletController(XFire xFire) {
+        return new XFireServletController(xFire);
+    }
+
+    @Bean("xfire.messageServiceFactory")
+    public ObjectServiceFactory objectServiceFactory(TransportManager transportManager,
+                                                     MessageBindingProvider messageBindingProvider) {
+        ObjectServiceFactory objectServiceFactory = new ObjectServiceFactory(transportManager, messageBindingProvider);
+        objectServiceFactory.setStyle("message");
+        return objectServiceFactory;
+    }
+
+    @Bean("xfire.messageBindingProvider")
+    public MessageBindingProvider messageBindingProvider() {
+        return new MessageBindingProvider();
     }
 
     public static void main(String[] args) {
