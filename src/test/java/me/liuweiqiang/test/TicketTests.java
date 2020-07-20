@@ -54,7 +54,7 @@ public class TicketTests {
             // 所以Hessian抛的是RemoteAccessException
         } catch (RemoteAccessException e) {
 //            System.out.println("RemoteAccessException cought");
-            logger.info("RemoteAccessException cought");
+            logger.info("RemoteAccessException caught");
 
         }
     }
@@ -73,7 +73,7 @@ public class TicketTests {
 //        } catch (ClassNotFoundException e) {
         } catch (TicketException e) {
 //            System.out.println("TicketException cought");
-            logger.info("TicketException cought");
+            logger.info("TicketException caught");
             //与Hessian不同，XFire会抛出TicketException，即使与服务端的异常不在同一个包
         }
     }
@@ -87,7 +87,7 @@ public class TicketTests {
             Assert.fail("Should catch RuntimeException when \"1\".equals(ticket)");
         } catch (RuntimeException e) {
 //            System.out.println("RuntimeException");
-            logger.info("RuntimeException cought");
+            logger.warn("RuntimeException caught, should not happen");
         }
     }
 }
