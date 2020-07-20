@@ -7,6 +7,8 @@ import me.liuweiqiang.test.rmi.TicketServiceEx;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,6 +34,8 @@ public class TicketTests {
     @Qualifier("xFireClientFactoryBean")
     private TicketServiceEx ticketServiceEx2;
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Test
     public void test001() {
         Assert.assertEquals(
@@ -49,7 +53,9 @@ public class TicketTests {
             //这里按接口定义的捕获TicketException，但接口声明的异常和服务端的异常不在同一个包
             // 所以Hessian抛的是RemoteAccessException
         } catch (RemoteAccessException e) {
-            System.out.println("RemoteAccessException cought");
+//            System.out.println("RemoteAccessException cought");
+            logger.info("RemoteAccessException cought");
+
         }
     }
 
@@ -66,7 +72,8 @@ public class TicketTests {
             ticketServiceEx2.verifyTicket("", "", "", "", "");
 //        } catch (ClassNotFoundException e) {
         } catch (TicketException e) {
-            System.out.println("TicketException cought");
+//            System.out.println("TicketException cought");
+            logger.info("TicketException cought");
             //与Hessian不同，XFire会抛出TicketException，即使与服务端的异常不在同一个包
         }
     }
@@ -79,7 +86,8 @@ public class TicketTests {
         } catch (TicketException e) {
             Assert.fail("Should catch RuntimeException when \"1\".equals(ticket)");
         } catch (RuntimeException e) {
-            System.out.println("RuntimeException");
+//            System.out.println("RuntimeException");
+            logger.info("RuntimeException cought");
         }
     }
 }
